@@ -24,7 +24,7 @@
 		<jersey.version>2.11</jersey.version>
 		<commons-io.version>2.4</commons-io.version>
 		<cucumber.version>1.1.8</cucumber.version>
-		<aspectj.version>1.7.4</aspectj.version>
+		<aspectj.version>1.8.0</aspectj.version>
 		<mockito.version>1.9.5</mockito.version>
 		<junit.version>4.11</junit.version>
 		<hibernate-validator.version>5.0.0.Final</hibernate-validator.version>
@@ -45,14 +45,23 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.6</version>
+				<version>1.7-SNAPSHOT</version>
 				<executions>
 					<execution>
-						<phase>prepare-package</phase>
 						<goals>
 							<goal>compile</goal>
+							<goal>test-compile</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -102,7 +111,6 @@
 						</goals>
 						<configuration>
 							<daemon>true</daemon>
-							<scanIntervalSeconds>0</scanIntervalSeconds>
 						</configuration>
 					</execution>
 					<execution>
