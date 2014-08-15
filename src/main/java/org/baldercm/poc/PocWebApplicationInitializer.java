@@ -42,6 +42,7 @@ public class PocWebApplicationInitializer implements WebApplicationInitializer {
 		jerseyServlet.setInitParameter("javax.ws.rs.Application", "org.baldercm.poc.config.PocJerseyConfig");
 		jerseyServlet.setLoadOnStartup(1);
 		jerseyServlet.addMapping("/*");
+		jerseyServlet.setAsyncSupported(true);
 	}
 
 	private void corsFilter(ServletContext servletContext) {
@@ -49,12 +50,14 @@ public class PocWebApplicationInitializer implements WebApplicationInitializer {
 		corsFilter.setInitParameter("cors.supportedHeaders", "Origin, Accept, Content-Type, X-Requested-With, Authorization");
 		corsFilter.setInitParameter("cors.supportedMethods", "GET, POST, PUT, DELETE, HEAD, OPTIONS");
 		corsFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+		corsFilter.setAsyncSupported(true);
 	}
 
 	private void characterEncodingFilter(ServletContext servletContext) {
 		FilterRegistration.Dynamic characterEncodingFilter = servletContext.addFilter("characterEncodingFilter", CharacterEncodingFilter.class);
 		characterEncodingFilter.setInitParameter("encoding", "UTF-8");
 		characterEncodingFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+		characterEncodingFilter.setAsyncSupported(true);
 	}
 
 //	private void addSpringSecurityFilter(ServletContext servletContext) {

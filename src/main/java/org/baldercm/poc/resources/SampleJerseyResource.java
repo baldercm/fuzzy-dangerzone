@@ -19,14 +19,10 @@ public class SampleJerseyResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(SampleJerseyResource.class);
 
-	public SampleJerseyResource() {
-		System.out.println("SampleJerseyResource");
-	}
-
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response list() {
-		logger.debug("SampleResource.list()");
+		logger.debug("SampleJerseyResource.list()");
 
 		List<Sample> samples = repository.findAll();
 		samples.sort(Sample.DEFAULT_SORT);
