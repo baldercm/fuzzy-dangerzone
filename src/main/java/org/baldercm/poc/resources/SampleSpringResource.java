@@ -1,7 +1,8 @@
 package org.baldercm.poc.resources;
 
-import java.util.List;
+import java.util.Collection;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -19,27 +20,26 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/api/sample")
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class SampleSpringResource {
 
 	@GET
-	public Response list() {
-		logger.debug("SampleSpringResource.list()");
+	public Response find() {
+		logger.debug("SampleSpringResource.find()");
 
-		List<Sample> samples = repository.findAll();
-		samples.sort(Sample.DEFAULT_SORT);
+		Collection<Sample> samples = repository.findAll();
 
 		return Response.ok(samples).build();
 	}
 
 	@GET
 	@Path("/async")
-	public void listAsync(@Suspended final AsyncResponse asyncResponse) {
-		logger.debug("SampleSpringResource.listAsync()");
+	public void findAsync(@Suspended final AsyncResponse asyncResponse) {
+		logger.debug("SampleSpringResource.findAsync()");
 
 		new Thread(() -> {
-			List<Sample> samples = repository.findAll();
-			samples.sort(Sample.DEFAULT_SORT);
+			Collection<Sample> samples = repository.findAll();
 			asyncResponse.resume(Response.ok(samples).build());
 		}).start();
 	}
