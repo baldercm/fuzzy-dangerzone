@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Path("/api/sample")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class SampleSpringResource {
+public class SampleResource {
 
 	@GET
 	public Response find() {
