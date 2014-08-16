@@ -10,6 +10,7 @@ import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
+@SampleConstraint
 public class Sample {
 
 	@Id

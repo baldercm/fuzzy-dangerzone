@@ -11,25 +11,22 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PocJerseyClient {
 
-	public PocJerseyClient() {
-	}
-
-	public PocJerseyClient(String host) {
-		this();
-		this.baseUri = host;
-	}
-
 	public Response getJson(String resourceUri) {
-		return jerseyClient()
+		Response response = jerseyClient()
 				.target(baseUri)
 				.path(resourceUri)
 				.request(MediaType.APPLICATION_JSON)
 				.get();
+
+		responseHolder.setResponse(response);
+
+		return response;
 	}
 
 	public Response getJson(String resourceUri, MultivaluedMap<String, ?> parameters) {
@@ -38,45 +35,65 @@ public class PocJerseyClient {
 				.path(resourceUri);
 		webTarget = addQueryParameters(webTarget, parameters);
 
-		return webTarget
+		Response response = webTarget
 				.request(MediaType.APPLICATION_JSON)
 				.get();
+
+		responseHolder.setResponse(response);
+
+		return response;
 	}
 
-	public Response postJson(String resourceUri, Object dto) {
-		return jerseyClient()
+	public Response postJson(String resourceUri, Object data) {
+		Response response = jerseyClient()
 				.target(baseUri)
 				.path(resourceUri)
 				.request(MediaType.APPLICATION_JSON)
-				.post(Entity.entity(dto, MediaType.APPLICATION_JSON));
+				.post(Entity.entity(data, MediaType.APPLICATION_JSON));
+
+		responseHolder.setResponse(response);
+
+		return response;
 	}
 
-	public Response postJson(String resourceUri, Object dto, MultivaluedMap<String, ?> parameters) {
+	public Response postJson(String resourceUri, Object data, MultivaluedMap<String, ?> parameters) {
 		WebTarget webTarget = jerseyClient()
 				.target(baseUri)
 				.path(resourceUri);
 
 		webTarget = addQueryParameters(webTarget, parameters);
 
-		return webTarget
+		Response response = webTarget
 				.request(MediaType.APPLICATION_JSON)
-				.post(Entity.entity(dto, MediaType.APPLICATION_JSON));
+				.post(Entity.entity(data, MediaType.APPLICATION_JSON));
+
+		responseHolder.setResponse(response);
+
+		return response;
 	}
 
 	public Response putJson(String resourceUri, Object data) {
-		return jerseyClient()
+		Response response = jerseyClient()
 				.target(baseUri)
 				.path(resourceUri)
 				.request(MediaType.APPLICATION_JSON)
 				.put(Entity.entity(data, MediaType.APPLICATION_JSON));
+
+		responseHolder.setResponse(response);
+
+		return response;
 	}
 
 	public Response putJson(String resourceUri) {
-		return jerseyClient()
+		Response response = jerseyClient()
 				.target(baseUri)
 				.path(resourceUri)
 				.request(MediaType.APPLICATION_JSON)
 				.delete();
+
+		responseHolder.setResponse(response);
+
+		return response;
 	}
 
 	private Client jerseyClient() {
@@ -100,5 +117,8 @@ public class PocJerseyClient {
 	}
 
 	private String baseUri = "http://localhost:8080/poc/api";
+
+	@Autowired
+	private ResponseHolder responseHolder;
 
 }

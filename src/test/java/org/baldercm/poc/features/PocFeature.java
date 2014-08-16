@@ -1,9 +1,11 @@
 package org.baldercm.poc.features;
 
+import static org.junit.Assert.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -13,12 +15,12 @@ import org.baldercm.poc.ResponseHolder;
 import org.baldercm.poc.config.PocConfig;
 import org.baldercm.poc.sample.Sample;
 import org.baldercm.poc.sample.SampleRepository;
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -26,24 +28,27 @@ import cucumber.api.java.en.When;
 @ContextConfiguration(classes = PocConfig.class)
 public class PocFeature {
 
-	@Given("^the existing Samples$")
-	public void theExistingSamples(DataTable names) {
-		createdSamples = new ArrayList<>();
-
-		for (Map<String, String> row : names.asMaps(String.class, String.class)) {
-			String name = row.get("name");
-			short age = Short.valueOf(row.get("age"));
-			BigDecimal height = new BigDecimal(row.get("age"));
-			Sample sample = sampleRepository.save(new Sample(name, age, height));
-			createdSamples.add(sample);
-		}
+	@Before("@deleteSamples")
+	@After("@deleteSamples")
+	public void deleteSamples() {
+		sampleRepository.deleteAll();
 	}
 
-	@When("^the user find all samples$")
-	public void theUserFindAllSamples() {
-		Response response = client.getJson("/sample");
+	@Given("^the existing samples$")
+	public void theExistingSamples(DataTable dataTable) {
+		existingSamples = new ArrayList<>();
 
-		responseHolder.setResponse(response);
+		Consumer<Sample> doSaveSamples = (sample) -> {
+			sample = sampleRepository.save(sample);
+			existingSamples.add(sample);
+		};
+
+		process(dataTable, doSaveSamples);
+	}
+
+	@When("^the user finds all samples$")
+	public void theUserFindsAllSamples() {
+		client.getJson("/sample");
 	}
 
 	@Then("^the user gets a list of all samples$")
@@ -51,12 +56,48 @@ public class PocFeature {
 		Response response = responseHolder.getResponse();
 		List<Sample> samples = response.readEntity(new GenericType<List<Sample>>() {
 		});
-		Assert.assertEquals("The samples are not the expected", createdSamples, samples);
+		assertEquals("The samples are not the expected", existingSamples, samples);
 	}
 
-	@After("@usingSample")
-	public void cleanup() {
-		sampleRepository.deleteAll();
+	@Given("^no existing samples$")
+	public void noExistingSamples() {
+	}
+
+	@When("^the user creates a sample$")
+	public void theUserCreatesASample(DataTable dataTable) {
+		Consumer<Sample> doPostSample = (sample) -> {
+			client.postJson("/sample", sample);
+		};
+
+		process(dataTable, doPostSample);
+	}
+
+	@Then("^the sample is saved$")
+	public void theSampleIsSaved() {
+		long samplesCount = sampleRepository.count();
+
+		assertTrue("The sample count is not the expected", samplesCount == 1);
+	}
+
+	@Then("^the sample is not saved$")
+	public void theSampleIsNotSaved() {
+		long samplesCount = sampleRepository.count();
+
+		assertTrue("The sample count is not the expected", samplesCount == 0);
+	}
+
+	private void process(DataTable dataTable, Consumer<Sample> sampleConsumer) {
+		dataTable
+				.asMaps(String.class, String.class)
+				.forEach((row) -> {
+					String name = row.get("namepo");
+					short age = Short.valueOf(row.get("age"));
+					BigDecimal height = new BigDecimal(row.get("height"));
+
+					Sample sample = new Sample(name, age, height);
+
+					sampleConsumer.accept(sample);
+				});
 	}
 
 	@Autowired
@@ -68,6 +109,6 @@ public class PocFeature {
 	@Autowired
 	private ResponseHolder responseHolder;
 
-	private List<Sample> createdSamples;
+	private List<Sample> existingSamples;
 
 }

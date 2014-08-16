@@ -6,11 +6,17 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 @EnableSpringConfigured
 @ComponentScan("org.baldercm.poc")
 public class PocConfig {
+
+	@Bean
+	public LocalValidatorFactoryBean localValidatorFactoryBean() {
+		return new LocalValidatorFactoryBean();
+	}
 
 	@Bean
 	public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
