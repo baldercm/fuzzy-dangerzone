@@ -27,6 +27,11 @@ Sample Java 8, Jersey, Spring 4, MongoDB
 
 		mvn clean verify
 
+## REST API
+
+* GET http://localhost:8080/poc/api/sample find all the existing samples
+* POST http://localhost:8080/poc/api/sample creates a new sample
+* GET http://localhost:8080/poc/api/sample/async find all the existing samples using Servlet3 AsyncResponse
 
 ## Versions
 
