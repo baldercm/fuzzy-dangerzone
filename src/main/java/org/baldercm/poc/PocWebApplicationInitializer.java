@@ -8,9 +8,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import org.apache.commons.lang3.CharEncoding;
+import org.baldercm.poc.config.PocConfig;
+import org.baldercm.poc.config.PocJerseyConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.thetransactioncompany.cors.CORSFilter;
@@ -29,35 +35,45 @@ public class PocWebApplicationInitializer implements WebApplicationInitializer {
 	}
 
 	private void springApplicationContext(ServletContext servletContext) {
-		servletContext.addListener("org.springframework.web.context.ContextLoaderListener");
-		servletContext.addListener("org.springframework.web.context.request.RequestContextListener");
+		AnnotationConfigWebApplicationContext appCtx = new AnnotationConfigWebApplicationContext();
+		appCtx.getEnvironment().setActiveProfiles("dev");
+		appCtx.register(PocConfig.class);
+		appCtx.refresh();
 
-		servletContext.setInitParameter("contextClass", "org.springframework.web.context.support.AnnotationConfigWebApplicationContext");
-		servletContext.setInitParameter("contextConfigLocation", "org.baldercm.poc.config.PocConfig");
-		servletContext.setInitParameter("spring.profiles.default", "dev");
+		servletContext.addListener(new ContextLoaderListener(appCtx));
+		servletContext.addListener(new RequestContextListener());
+
+		// workaround to prevent Jersey's SpringWebApplicationInitializer bootstrapping
+		servletContext.setInitParameter("contextConfigLocation", "dummy");
 	}
 
 	private void jerseyServlet(ServletContext servletContext) {
-		ServletRegistration.Dynamic jerseyServlet = servletContext.addServlet("pocJerseyServlet", ServletContainer.class);
-		jerseyServlet.setInitParameter("javax.ws.rs.Application", "org.baldercm.poc.config.PocJerseyConfig");
-		jerseyServlet.setLoadOnStartup(1);
-		jerseyServlet.addMapping("/*");
-		jerseyServlet.setAsyncSupported(true);
+		ServletContainer jerseyServlet = new ServletContainer(new PocJerseyConfig());
+
+		ServletRegistration.Dynamic jerseyServletConfig = servletContext.addServlet("jerseyServlet", jerseyServlet);
+		jerseyServletConfig.setLoadOnStartup(1);
+		jerseyServletConfig.addMapping("/*");
+		jerseyServletConfig.setAsyncSupported(true);
 	}
 
 	private void corsFilter(ServletContext servletContext) {
-		FilterRegistration.Dynamic corsFilter = servletContext.addFilter("corsFilter", CORSFilter.class);
-		corsFilter.setInitParameter("cors.supportedHeaders", "Origin, Accept, Content-Type, X-Requested-With, Authorization");
-		corsFilter.setInitParameter("cors.supportedMethods", "GET, POST, PUT, DELETE, HEAD, OPTIONS");
-		corsFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
-		corsFilter.setAsyncSupported(true);
+		CORSFilter corsFilter = new CORSFilter();
+
+		FilterRegistration.Dynamic corsFilterConfig = servletContext.addFilter("corsFilter", corsFilter);
+		corsFilterConfig.setInitParameter("cors.supportedHeaders", "Origin, Accept, Content-Type, X-Requested-With, Authorization");
+		corsFilterConfig.setInitParameter("cors.supportedMethods", "GET, POST, PUT, DELETE, HEAD, OPTIONS");
+		corsFilterConfig.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+		corsFilterConfig.setAsyncSupported(true);
 	}
 
 	private void characterEncodingFilter(ServletContext servletContext) {
-		FilterRegistration.Dynamic characterEncodingFilter = servletContext.addFilter("characterEncodingFilter", CharacterEncodingFilter.class);
-		characterEncodingFilter.setInitParameter("encoding", "UTF-8");
-		characterEncodingFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
-		characterEncodingFilter.setAsyncSupported(true);
+		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+		characterEncodingFilter.setEncoding(CharEncoding.UTF_8);
+		characterEncodingFilter.setForceEncoding(true);
+
+		FilterRegistration.Dynamic characterEncodingFilterConfig = servletContext.addFilter("characterEncodingFilter", characterEncodingFilter);
+		characterEncodingFilterConfig.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+		characterEncodingFilterConfig.setAsyncSupported(true);
 	}
 
 //	private void addSpringSecurityFilter(ServletContext servletContext) {
