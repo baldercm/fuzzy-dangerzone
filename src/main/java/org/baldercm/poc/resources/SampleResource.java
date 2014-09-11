@@ -8,6 +8,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -64,6 +65,12 @@ public class SampleResource {
 
 		sample = repository.save(sample);
 		return Response.status(Status.CREATED).entity(sample).build();
+	}
+
+	@DELETE
+	public Response deleteAll() {
+		repository.deleteAll();
+		return Response.noContent().build();
 	}
 
 	@Autowired

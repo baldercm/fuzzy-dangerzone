@@ -84,7 +84,7 @@ public class PocJerseyClient {
 		return response;
 	}
 
-	public Response putJson(String resourceUri) {
+	public Response deleteJson(String resourceUri) {
 		Response response = jerseyClient()
 				.target(baseUri)
 				.path(resourceUri)

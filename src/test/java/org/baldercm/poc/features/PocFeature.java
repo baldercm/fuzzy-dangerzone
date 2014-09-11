@@ -3,7 +3,7 @@ package org.baldercm.poc.features;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -14,7 +14,6 @@ import org.baldercm.poc.PocJerseyClient;
 import org.baldercm.poc.ResponseHolder;
 import org.baldercm.poc.config.PocConfig;
 import org.baldercm.poc.sample.Sample;
-import org.baldercm.poc.sample.SampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -31,16 +30,13 @@ public class PocFeature {
 	@Before("@deleteSamples")
 	@After("@deleteSamples")
 	public void deleteSamples() {
-		sampleRepository.deleteAll();
+		client.deleteJson("/sample");
 	}
 
 	@Given("^the existing samples$")
 	public void theExistingSamples(DataTable dataTable) {
-		existingSamples = new ArrayList<>();
-
 		Consumer<Sample> doSaveSamples = (sample) -> {
-			sample = sampleRepository.save(sample);
-			existingSamples.add(sample);
+			client.postJson("/sample", sample);
 		};
 
 		process(dataTable, doSaveSamples);
@@ -54,9 +50,8 @@ public class PocFeature {
 	@Then("^the user gets a list of all samples$")
 	public void theUserGetsAListOfAllSamples() {
 		Response response = responseHolder.getResponse();
-		List<Sample> samples = response.readEntity(new GenericType<List<Sample>>() {
-		});
-		assertEquals("The samples are not the expected", existingSamples, samples);
+		List<Sample> samples = response.readEntity(new GenericType<List<Sample>>() {});
+		assertEquals("The samples are not the expected", 2, samples.size());
 	}
 
 	@Given("^no existing samples$")
@@ -74,14 +69,16 @@ public class PocFeature {
 
 	@Then("^the sample is saved$")
 	public void theSampleIsSaved() {
-		long samplesCount = sampleRepository.count();
+		Response response = client.getJson("/sample");
+		int samplesCount = response.readEntity(new GenericType<Collection<Sample>>() {}).size();
 
 		assertTrue("The sample count is not the expected", samplesCount == 1);
 	}
 
 	@Then("^the sample is not saved$")
 	public void theSampleIsNotSaved() {
-		long samplesCount = sampleRepository.count();
+		Response response = client.getJson("/sample");
+		int samplesCount = response.readEntity(new GenericType<Collection<Sample>>() {}).size();
 
 		assertTrue("The sample count is not the expected", samplesCount == 0);
 	}
@@ -104,11 +101,6 @@ public class PocFeature {
 	private PocJerseyClient client;
 
 	@Autowired
-	private SampleRepository sampleRepository;
-
-	@Autowired
 	private ResponseHolder responseHolder;
-
-	private List<Sample> existingSamples;
 
 }
