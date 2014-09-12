@@ -3,35 +3,53 @@
 Sample Java 8, Jersey, Spring 4, MongoDB
 
 
+## Overview
+* [Software Requirements](#software-requirements)
+* [Basic usage](#basic-usage)
+* [REST API](#rest-api)
+* [Versions](#versions)
+* [Executable JAR webapp](#executable-jar-webapp)
+    - [Zero XML](#zero-xml)
+* [Docker](#docker)
+    - [Cucumber tests](#cucumber-tests)
+    - [Docker assembly](#docker-assembly)
+
+
 ## Software Requirements
 
-* JDK 8
-* Maven 3.2.x
+* Java 8 (1.8.0_20)
+* MongoDB (2.6.4)
+* Maven (3.2.3)
+* Docker (lxc-docker 1.2.0)
 * Git
 * Subversion
 
 ### Snapshot Versions
 
-* aspectj-maven-plugin:1.7-SNAPSHOT
-	* checkout from SVN http://svn.codehaus.org/mojo/trunk/mojo/aspectj-maven-plugin
-	* install to local Maven repo using `mvn clean install`
+* aspectj-maven-plugin:1.8-SNAPSHOT
+  - checkout from SVN http://svn.codehaus.org/mojo/trunk/mojo/aspectj-maven-plugin
+  - install to local Maven repo using `mvn clean install`
 
 
 ## Basic usage
 
-* Run the app using Jetty
+* Run the app using embedded Jetty
 
-		mvn clean package jetty:run
+		mvn clean compile exec:java
 
-* Run Cucumber tests
+* Run Cucumber tests on Docker
 
 		mvn clean verify
 
+
 ## REST API
 
-* GET  http://localhost:8080/poc/api/sample find all the existing samples
-* POST http://localhost:8080/poc/api/sample creates a new sample
-* GET  http://localhost:8080/poc/api/sample/async find all the existing samples using Servlet3 AsyncResponse
+All the resource URIs consumes and produces `application/json`.
+
+* `GET  http://localhost:8080/poc/api/sample` find all the existing samples
+* `POST http://localhost:8080/poc/api/sample` creates a new sample
+* `GET  http://localhost:8080/poc/api/sample/async` find all the existing samples using Servlet3 AsyncResponse
+
 
 ## Versions
 
@@ -44,6 +62,58 @@ Sample Java 8, Jersey, Spring 4, MongoDB
 * Hibernate Validator 5.1
 * Jetty 9.2
 
-## Zero XML
 
-The project uses Servlet3 and Spring Java based configuration.
+## Executable JAR webapp
+
+The project is packaged by the `maven-shade-plugin` as an executable JAR webapp using an embedded Jetty server. The main class is `org.baldercm.poc.Main`.
+
+### Zero XML
+
+The project uses Java configuration for Servlet3, Jersey and Spring.
+
+
+## Docker
+
+The project contains a `src/main/docker` folder containing the required `Dockerfile`s and start/stop scripts.
+
+To build a fully functional Docker environment, simply use
+
+    mvn clean package
+
+You will get something like this:
+
+    target/docker
+    ├── docker-start.sh
+    ├── docker-stop.sh
+    ├── app
+    |   ├── Dockerfile
+    |   ├── poc.jar
+    ├── mongodb
+    |   ├── Dockerfile
+
+You can run the Docker containers using
+
+    sh target/docker/docker-start.sh
+
+You can access the webapp pointing your browser to
+
+    http://localhost:8080/poc/api/sample
+(if you have no data you will only see `[]`, an empty JSON array).
+
+To stop and remove all Docker containers and images use
+
+    sh target/docker/docker-stop.sh
+
+### Cucumber tests
+
+`exec-maven-plugin` is bound to `pre-integration-test` and `post-integration-test` phases to start and stop all Docker containers using the scripts in `target/docker`.
+
+Cucumber tests entrypoint is `org.baldercm.poc.RunCukesIT` and tests are run with `maven-failsafe-plugin` during `integration-test` phase.
+
+### Docker assembly
+
+The project uses `maven-assembly-plugin` to package compressed versions of the `target/docker` directory, generating the following files:
+
+    target
+    ├── poc-${version}-docker.tar.gz
+    ├── poc-${version}-docker.tar.zip

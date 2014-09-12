@@ -11,7 +11,7 @@
 	<artifactId>poc</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -19,7 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<aspectj.version>1.8.0</aspectj.version>
+		<aspectj.version>1.8.2</aspectj.version>
 		<commons-io.version>2.4</commons-io.version>
 		<commons-lang.version>3.3.2</commons-lang.version>
 		<cors-filter.version>2.1.2</cors-filter.version>
@@ -39,8 +39,25 @@
 	</properties>
 
 	<build>
-		<finalName>poc</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-help-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<id>active-profiles</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>active-profiles</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -52,32 +69,9 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.7-SNAPSHOT</version>
+				<version>1.8-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<goals>
@@ -89,7 +83,7 @@
 				<configuration>
 					<showWeaveInfo>true</showWeaveInfo>
 					<Xlint>ignore</Xlint>
-					<encoding>UTF-8</encoding>
+					<encoding>${project.build.sourceEncoding}</encoding>
 					<complianceLevel>${java.version}</complianceLevel>
 					<aspectLibraries>
 						<aspectLibrary>
@@ -111,54 +105,13 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty.version}</version>
-				<configuration>
-					<war>${basedir}/target/poc.war</war>
-					<webApp>
-						<contextPath>/poc</contextPath>
-					</webApp>
-					<stopKey>STOP_JETTY</stopKey>
-					<stopPort>9099</stopPort>
-					<reload>manual</reload>
-				</configuration>
-				<executions>
-					<execution>
-						<id>start-jetty</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>deploy-war</goal>
-						</goals>
-						<configuration>
-							<daemon>true</daemon>
-							<scanIntervalSeconds>0</scanIntervalSeconds>
-						</configuration>
-					</execution>
-					<execution>
-						<id>stop-jetty</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.17</version>
 				<executions>
 					<execution>
-						<id>integration-test</id>
 						<goals>
 							<goal>integration-test</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>verify</id>
-						<goals>
 							<goal>verify</goal>
 						</goals>
 					</execution>
@@ -184,6 +137,7 @@
 										<exclude>META-INF/*.SF</exclude>
 										<exclude>META-INF/*.DSA</exclude>
 										<exclude>META-INF/*.RSA</exclude>
+										<exclude>META-INF/SIG-*</exclude>
 										<exclude>*.txt</exclude>
 										<exclude>*.html</exclude>
 										<exclude>*.css</exclude>
@@ -194,6 +148,13 @@
 								</filter>
 							</filters>
 							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+									<resource>mongo.properties</resource>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+									<file>src/main/docker/mongo-docker.properties</file>
+									<resource>mongo.properties</resource>
+								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer" />
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
@@ -222,17 +183,115 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
 
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*.xml</include>
-					<include>**/*.properties</include>
-				</includes>
-			</resource>
-		</resources>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>docker-resources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/docker</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/docker</directory>
+									<filtering>true</filtering>
+									<excludes>
+										<exclude>mongo-docker.properties</exclude>
+									</excludes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>docker-jar-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/docker/app</outputDirectory>
+							<resources>
+								<resource>
+									<directory>target</directory>
+									<include>${project.build.finalName}.jar</include>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<executions>
+					<execution>
+						<id>package-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/docker.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<executions>
+					<execution>
+						<id>default-cli</id>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>org.baldercm.poc.Main</mainClass>
+						</configuration>
+					</execution>
+					<execution>
+						<id>docker-start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<workingDirectory>${basedir}/target/docker</workingDirectory>
+							<arguments>
+								<argument>${basedir}/target/docker/docker-start.sh</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>docker-stop</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<workingDirectory>${basedir}/target/docker</workingDirectory>
+							<arguments>
+								<argument>${basedir}/target/docker/docker-stop.sh</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 	<dependencyManagement>
@@ -322,6 +381,11 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
 			<version>${aspectj.version}</version>
 		</dependency>
 
