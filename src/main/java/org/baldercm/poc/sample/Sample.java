@@ -3,15 +3,24 @@ package org.baldercm.poc.sample;
 import java.math.BigDecimal;
 import java.util.Comparator;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @SampleConstraint
+@Configurable
 public class Sample {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Sample.class);
 
 	@Id
 	private String id;
@@ -23,6 +32,17 @@ public class Sample {
 	private BigDecimal height;
 
 	public static final Comparator<Sample> DEFAULT_SORT = (Sample s1, Sample s2) -> s1.getName().compareTo(s2.getName());
+
+	@Autowired
+	private SampleRepository repository;
+
+	@PostConstruct
+	public void init() {
+		if (repository == null)
+			throw new RuntimeException("AspectJ/@Configurable error!");
+
+		LOGGER.debug("AspectJ/@Configurable are working!");
+	}
 
 	@SuppressWarnings("unused")
 	private Sample() {
