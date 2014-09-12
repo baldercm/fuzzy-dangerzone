@@ -4,15 +4,13 @@ Sample Java 8, Jersey, Spring 4, MongoDB
 
 
 ## Overview
+
 * [Software Requirements](#software-requirements)
 * [Basic usage](#basic-usage)
 * [REST API](#rest-api)
-* [Versions](#versions)
 * [Executable JAR webapp](#executable-jar-webapp)
-    - [Zero XML](#zero-xml)
 * [Docker](#docker)
-    - [Cucumber tests](#cucumber-tests)
-    - [Docker assembly](#docker-assembly)
+* [Versions](#versions)
 
 
 ## Software Requirements
@@ -24,22 +22,32 @@ Sample Java 8, Jersey, Spring 4, MongoDB
 * Git
 * Subversion
 
-### Snapshot Versions
+### Automatic installation
 
-* aspectj-maven-plugin:1.8-SNAPSHOT
-  - checkout from SVN http://svn.codehaus.org/mojo/trunk/mojo/aspectj-maven-plugin
-  - install to local Maven repo using `mvn clean install`
+Check https://github.com/balder-otium360/devenv (only for Ubuntu) to help you install all the required software or download and install the software manually.
+
+### Manual installation
+
+* `aspectj-maven-plugin:1.8-SNAPSHOT`
+    - checkout from SVN
+
+            mkdir ~/svn
+            cd ~/svn
+            svn checkout http://svn.codehaus.org/mojo/trunk/mojo/aspectj-maven-plugin
+    - install to local Maven repo using
+
+            cd ~/svn/aspectj-maven-plugin
+            mvn clean install
 
 
 ## Basic usage
 
 * Run the app using embedded Jetty
 
-		mvn clean compile exec:java
-
+        mvn clean compile exec:java
 * Run Cucumber tests on Docker
 
-		mvn clean verify
+        mvn clean verify
 
 
 ## REST API
@@ -49,18 +57,6 @@ All the resource URIs consumes and produces `application/json`.
 * `GET  http://localhost:8080/poc/api/sample` find all the existing samples
 * `POST http://localhost:8080/poc/api/sample` creates a new sample
 * `GET  http://localhost:8080/poc/api/sample/async` find all the existing samples using Servlet3 AsyncResponse
-
-
-## Versions
-
-* Java 8
-* AspectJ 1.8
-* Servlet 3.1
-* Jersey 2.11
-* Spring 4
-* Spring Data 1.5
-* Hibernate Validator 5.1
-* Jetty 9.2
 
 
 ## Executable JAR webapp
@@ -95,7 +91,7 @@ You can run the Docker containers using
 
     sh target/docker/docker-start.sh
 
-You can access the webapp pointing your browser to
+You can access the webapp pointing your browser or REST client to
 
     http://localhost:8080/poc/api/sample
 (if you have no data you will only see `[]`, an empty JSON array).
@@ -112,8 +108,20 @@ Cucumber tests entrypoint is `org.baldercm.poc.RunCukesIT` and tests are run wit
 
 ### Docker assembly
 
-The project uses `maven-assembly-plugin` to package compressed versions of the `target/docker` directory, generating the following files:
+The project uses `maven-assembly-plugin` to create different compressed files that contains the `target/docker` directory, generating the following files:
 
     target
     ├── poc-${version}-docker.tar.gz
     ├── poc-${version}-docker.tar.zip
+
+
+## Versions
+
+* Java 8
+* AspectJ 1.8
+* Servlet 3.1
+* Jersey 2.11
+* Spring 4
+* Spring Data 1.5
+* Hibernate Validator 5.1
+* Jetty 9.2
