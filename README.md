@@ -20,24 +20,10 @@ Sample Java 8, Jersey, Spring 4, MongoDB
 * Maven (3.2.3)
 * Docker (lxc-docker 1.2.0)
 * Git
-* Subversion
 
 ### Automatic installation
 
 Check https://github.com/balder-otium360/devenv (only for Ubuntu) to help you install all the required software or download and install the software manually.
-
-### Manual installation
-
-* `aspectj-maven-plugin:1.8-SNAPSHOT`
-    - checkout from SVN
-
-            mkdir ~/svn
-            cd ~/svn
-            svn checkout http://svn.codehaus.org/mojo/trunk/mojo/aspectj-maven-plugin
-    - install to local Maven repo using
-
-            cd ~/svn/aspectj-maven-plugin
-            mvn clean install
 
 
 ## Basic usage
@@ -70,7 +56,7 @@ The project uses Java configuration for Servlet3, Jersey and Spring.
 
 ## Docker
 
-The project contains a `src/main/docker` folder containing the required `Dockerfile`s and start/stop scripts.
+The project contains a `src/main/docker` folder that holds the required `Dockerfile`s and start/stop scripts.
 
 To build a fully functional Docker environment, simply use
 
