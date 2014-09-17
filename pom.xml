@@ -24,18 +24,18 @@
 		<commons-lang.version>3.3.2</commons-lang.version>
 		<cors-filter.version>2.1.2</cors-filter.version>
 		<cucumber.version>1.1.8</cucumber.version>
-		<jersey.version>2.11</jersey.version>
-		<jetty.version>9.2.2.v20140723</jetty.version>
+		<jersey.version>2.12</jersey.version>
+		<jetty.version>9.2.3.v20140905</jetty.version>
 		<logback.version>1.1.2</logback.version>
 		<hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
 		<junit.version>4.11</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 		<perf4j.version>0.9.16</perf4j.version>
-		<powermock.version>1.5.5</powermock.version>
+		<powermock.version>1.5.6</powermock.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<slf4j.version>1.7.7</slf4j.version>
-		<spring.version>4.0.6.RELEASE</spring.version>
-		<spring-data-mongo.version>1.5.2.RELEASE</spring-data-mongo.version>
+		<spring.version>4.1.0.RELEASE</spring.version>
+		<spring-data-mongo.version>1.6.0.RELEASE</spring-data-mongo.version>
 	</properties>
 
 	<build>
@@ -299,7 +299,7 @@
 			<dependency>
 				<groupId>org.glassfish.jersey</groupId>
 				<artifactId>jersey-bom</artifactId>
-				<version>2.11</version>
+				<version>${jersey.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
