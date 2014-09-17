@@ -98,7 +98,7 @@ The project uses `maven-assembly-plugin` to create different compressed files th
 
     target
     ├── poc-${version}-docker.tar.gz
-    ├── poc-${version}-docker.tar.zip
+    ├── poc-${version}-docker.zip
 
 
 ## Versions

@@ -14,12 +14,8 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>${project.basedir}/src/main/docker</directory>
+			<directory>${project.build.directory}/docker</directory>
 			<outputDirectory>/</outputDirectory>
-			<filtered>true</filtered>
-			<excludes>
-				<exclude>mongo-docker.properties</exclude>
-			</excludes>
 		</fileSet>
 	</fileSets>
 	

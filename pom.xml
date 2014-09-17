@@ -149,10 +149,13 @@
 							</filters>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-									<resource>mongo.properties</resource>
+									<resources>
+										<resource>mongo.properties</resource>
+										<resource>mongo-docker.properties</resource>
+									</resources>
 								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<file>src/main/docker/mongo-docker.properties</file>
+									<file>src/main/resources/mongo-docker.properties</file>
 									<resource>mongo.properties</resource>
 								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
@@ -201,9 +204,6 @@
 								<resource>
 									<directory>src/main/docker</directory>
 									<filtering>true</filtering>
-									<excludes>
-										<exclude>mongo-docker.properties</exclude>
-									</excludes>
 								</resource>
 							</resources>
 						</configuration>
