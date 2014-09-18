@@ -1,6 +1,6 @@
 # fuzzy-dangerzone
 
-Sample Java 8, Jersey, Spring 4, MongoDB
+Sample webapp using Java 8, Jersey, Spring 4, MongoDB, Docker, AWS
 
 
 ## Overview
@@ -112,13 +112,18 @@ Cucumber tests are isolated in the Maven `cucumber` profile, entrypoint class is
 
 ## AWS Elastic Beanstalk
 
-You need an AWS Access Key to upload the application to AWS and setup Maven to manage the access keys when needed. Check [Beanstalker documentation](http://docs.ingenieux.com.br/project/beanstalker/aws-config.html) for further details.
+You need an AWS Access Key to upload the application to AWS and setup Maven to manage the access keys when needed. Check [Beanstalker documentation](http://docs.ingenieux.com.br/project/beanstalker/aws-config.html) for a step-by-step configuration guide.
 
 Tu upload to AWS Elastic Beanstalk use:
 
         mvn clean deploy -Paws
 
 All AWS functionality is isolated in the Maven `aws` profile. The project uses `beanstalk-maven-plugin` to upload, create application version and update the environment.
+
+### MongoDB for AWS deployment
+
+MongoDB connection values for AWS are defined in `src/main/filters/aws.properties`. Current setup uses a MongoLab instance hosted on Amazon AWS. Feel free to update this values to whatever you need.
+
 
 ## Versions
 
