@@ -12,5 +12,5 @@ import cucumber.api.junit.Cucumber;
 		format = { "pretty", "html:target/cucumber-html-report" },
 		features = "src/test/resources/org/baldercm/poc/features",
 		snippets = SnippetType.CAMELCASE)
-public class RunCukesIT {
+public class RunCucumber {
 }

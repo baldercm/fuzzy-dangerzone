@@ -6,10 +6,12 @@ Sample Java 8, Jersey, Spring 4, MongoDB
 ## Overview
 
 * [Software Requirements](#software-requirements)
-* [Basic usage](#basic-usage)
+* [Basic Usage](#basic-usage)
 * [REST API](#rest-api)
 * [Executable JAR webapp](#executable-jar-webapp)
 * [Docker](#docker)
+* [Cucumber Tests](#cucumber-tests)
+* [AWS Elastic Beanstalk](#aws-elastic-beanstalk)
 * [Versions](#versions)
 
 
@@ -21,19 +23,22 @@ Sample Java 8, Jersey, Spring 4, MongoDB
 * Docker (lxc-docker 1.2.0)
 * Git
 
-### Automatic installation
+### Automatic Installation
 
 Check https://github.com/balder-otium360/devenv (only for Ubuntu) to help you install all the required software or download and install the software manually.
 
 
-## Basic usage
+## Basic Usage
 
-* Run the app using embedded Jetty
+* Run the app using embedded Jetty:
 
         mvn clean compile exec:java
-* Run Cucumber tests on Docker
+* Run Cucumber tests on Docker:
 
-        mvn clean verify
+        mvn clean verify -Pcucumber
+* Upload to AWS Elastic Beanstalk:
+
+        mvn clean deploy -Paws
 
 
 ## REST API
@@ -86,12 +91,6 @@ To stop and remove all Docker containers and images use
 
     sh target/docker/docker-stop.sh
 
-### Cucumber tests
-
-`exec-maven-plugin` is bound to `pre-integration-test` and `post-integration-test` phases to start and stop all Docker containers using the scripts in `target/docker`.
-
-Cucumber tests entrypoint is `org.baldercm.poc.RunCukesIT` and tests are run with `maven-failsafe-plugin` during `integration-test` phase.
-
 ### Docker assembly
 
 The project uses `maven-assembly-plugin` to create different compressed files that contains the `target/docker` directory, generating the following files:
@@ -100,6 +99,26 @@ The project uses `maven-assembly-plugin` to create different compressed files th
     ├── poc-${version}-docker.tar.gz
     ├── poc-${version}-docker.zip
 
+## Cucumber Tests
+
+To run Cucumber tests on Docker use:
+
+        mvn clean verify -Pcucumber
+
+`exec-maven-plugin` is bound to `pre-integration-test` and `post-integration-test` phases to start and stop all Docker containers using the scripts in `target/docker`.
+
+Cucumber tests are isolated in the Maven `cucumber` profile, entrypoint class is `org.baldercm.poc.RunCucumber` and tests are run with `maven-failsafe-plugin` during `integration-test` phase.
+
+
+## AWS Elastic Beanstalk
+
+You need an AWS Access Key to upload the application to AWS and setup Maven to manage the access keys when needed. Check [Beanstalker documentation](http://docs.ingenieux.com.br/project/beanstalker/aws-config.html) for further details.
+
+Tu upload to AWS Elastic Beanstalk use:
+
+        mvn clean deploy -Paws
+
+All AWS functionality is isolated in the Maven `aws` profile. The project uses `beanstalk-maven-plugin` to upload, create application version and update the environment.
 
 ## Versions
 
