@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Slf4jRequestLog;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
+import org.eclipse.jetty.server.handler.ShutdownHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -16,10 +17,12 @@ public class Main {
 
 		WebAppContext context = webAppContext();
 		RequestLogHandler requestLogHandler = requestLogHandler();
+		ShutdownHandler shutdownHandler = new ShutdownHandler("stop_jetty");
 
 		HandlerCollection handlers = new HandlerCollection();
 		handlers.addHandler(context);
 		handlers.addHandler(requestLogHandler);
+		handlers.addHandler(shutdownHandler);
 
 		server.setHandler(handlers);
 
