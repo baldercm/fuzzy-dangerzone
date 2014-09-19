@@ -27,7 +27,7 @@ public class Sample {
 
 	private String name;
 
-	private short age;
+	private int age;
 
 	private BigDecimal height;
 
@@ -44,12 +44,17 @@ public class Sample {
 		LOGGER.debug("AspectJ/@Configurable are working!");
 	}
 
+	public Sample someImportantDomainOperation() {
+		this.name = this.name + "***";
+		return repository.save(this);
+	}
+
 	@SuppressWarnings("unused")
 	private Sample() {
 	}
 
 	@PersistenceConstructor
-	public Sample(String name, short age, BigDecimal height) {
+	public Sample(String name, int age, BigDecimal height) {
 		this.name = name;
 		this.age = age;
 		this.height = height;
@@ -63,7 +68,7 @@ public class Sample {
 		return name;
 	}
 
-	public short getAge() {
+	public int getAge() {
 		return age;
 	}
 
