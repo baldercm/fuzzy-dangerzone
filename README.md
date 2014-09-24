@@ -1,17 +1,17 @@
 # fuzzy-dangerzone
 
-Sample webapp using Java 8, Jersey, Spring 4, MongoDB, Docker, AWS
+Sample webapp using Java 8, Jersey, Spring 4, MongoDB, Docker, AWS Beanstalk
 
 
 ## Overview
 
 * [Software Requirements](#software-requirements)
 * [Basic Usage](#basic-usage)
-* [REST API](#rest-api)
 * [Executable JAR webapp](#executable-jar-webapp)
 * [Docker](#docker)
 * [Cucumber Tests](#cucumber-tests)
 * [AWS Elastic Beanstalk](#aws-elastic-beanstalk)
+* [REST API](#rest-api)
 * [Versions](#versions)
 
 
@@ -21,7 +21,6 @@ Sample webapp using Java 8, Jersey, Spring 4, MongoDB, Docker, AWS
 * MongoDB (2.6.4)
 * Maven (3.2.3)
 * Docker (lxc-docker 1.2.0)
-* Git
 
 ### Automatic Installation
 
@@ -39,15 +38,6 @@ Check https://github.com/balder-otium360/devenv (only for Ubuntu) to help you in
 * Upload to AWS Elastic Beanstalk:
 
         mvn clean deploy -Paws
-
-
-## REST API
-
-All the resource URIs consumes and produces `application/json`.
-
-* `GET  http://localhost:8080/poc/api/sample` find all the existing samples
-* `POST http://localhost:8080/poc/api/sample` creates a new sample
-* `GET  http://localhost:8080/poc/api/sample/async` find all the existing samples using Servlet3 AsyncResponse
 
 
 ## Executable JAR webapp
@@ -107,31 +97,50 @@ To run Cucumber tests on Docker use:
 
 `exec-maven-plugin` is bound to `pre-integration-test` and `post-integration-test` phases to start and stop all Docker containers using the scripts in `target/docker`.
 
-Cucumber tests are isolated in the Maven `cucumber` profile, entrypoint class is `org.baldercm.poc.RunCucumber` and tests are run with `maven-failsafe-plugin` during `integration-test` phase.
+Cucumber tests are isolated in the Maven `cucumber` profile, and tests are run with `maven-failsafe-plugin`.
 
 
 ## AWS Elastic Beanstalk
 
-You need an AWS Access Key to upload the application to AWS and setup Maven to manage the access keys when needed. Check [Beanstalker documentation](http://docs.ingenieux.com.br/project/beanstalker/aws-config.html) for a step-by-step configuration guide.
-
-Tu upload to AWS Elastic Beanstalk use:
+Tu upload to Amazon AWS' Elastic Beanstalk use:
 
         mvn clean deploy -Paws
 
-All AWS functionality is isolated in the Maven `aws` profile. The project uses `beanstalk-maven-plugin` to upload, create application version and update the environment.
+You need an _AWS access key_ to upload the application to AWS and you must setup Maven to manage the access keys. Check [beanstalk-maven-plugin documentation](http://docs.ingenieux.com.br/project/beanstalker/aws-config.html) for a step-by-step configuration guide.
+
+The project uses `beanstalk-maven-plugin` to upload the application to S3, create application version and update the Beanstalk environment.
+
+All AWS functionality is isolated in the Maven `aws` profile. This profile will prevent the creation of default Docker assemblies and will create a special `poc-${version}-aws.zip` assembly instead:
+
+    poc-${version}-aws.zip
+    ├── Dockerfile
+    ├── poc-${version}.jar
+
+You can generate the AWS assembly to be manually uploaded and deployed later with:
+
+        mvn clean package -Paws
+
+The AWS assembly can be directly deployed on Beanstalk and consists of a single Java container, MongoDB instance must be provided separately.
 
 ### MongoDB for AWS deployment
 
-MongoDB connection values for AWS are defined in `src/main/filters/aws.properties`. Current setup uses a MongoLab instance hosted on Amazon AWS. Feel free to update this values to whatever you need.
+MongoDB connection values for AWS are defined in `src/main/filters/aws.properties`. Current setup uses a MongoLab instance hosted on AWS. Feel free to update this values to whatever you need.
 
+## REST API
+
+All the resource URIs consumes and produces `application/json`.
+
+* `GET  http://localhost:8080/poc/api/sample` find all the existing samples
+* `POST http://localhost:8080/poc/api/sample` creates a new sample
+* `GET  http://localhost:8080/poc/api/sample/async` find all the existing samples using Servlet3 AsyncResponse
 
 ## Versions
 
 * Java 8
 * AspectJ 1.8
 * Servlet 3.1
-* Jersey 2.11
-* Spring 4
-* Spring Data 1.5
+* Jersey 2.12
+* Spring 4.1
+* Spring Data 1.6
 * Hibernate Validator 5.1
 * Jetty 9.2
