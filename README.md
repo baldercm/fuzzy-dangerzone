@@ -20,7 +20,7 @@ Sample webapp using Java 8, Jersey, Spring 4, MongoDB, Docker, AWS Beanstalk
 * Java 8 (1.8.0_20)
 * MongoDB (2.6.4)
 * Maven (3.2.3)
-* Docker (lxc-docker 1.2.0)
+* Docker (lxc-docker 1.5.0)
 
 ### Automatic Installation
 
@@ -139,8 +139,8 @@ All the resource URIs consumes and produces `application/json`.
 * Java 8
 * AspectJ 1.8
 * Servlet 3.1
-* Jersey 2.12
+* Jersey 2.17
 * Spring 4.1
-* Spring Data 1.6
+* Spring Data 1.7
 * Hibernate Validator 5.1
 * Jetty 9.2
