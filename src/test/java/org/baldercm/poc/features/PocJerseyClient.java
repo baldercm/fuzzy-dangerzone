@@ -1,4 +1,4 @@
-package org.baldercm.poc;
+package org.baldercm.poc.features;
 
 import java.util.List;
 

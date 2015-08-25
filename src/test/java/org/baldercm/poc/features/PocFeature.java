@@ -1,6 +1,7 @@
 package org.baldercm.poc.features;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -10,13 +11,9 @@ import java.util.function.Consumer;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import org.baldercm.poc.PocJerseyClient;
-import org.baldercm.poc.ResponseHolder;
-import org.baldercm.poc.config.PocConfig;
 import org.baldercm.poc.sample.Sample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.After;
@@ -25,8 +22,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-@ContextConfiguration(classes = PocConfig.class)
-@WebAppConfiguration
+@ContextConfiguration(classes = PocCucumberConfig.class)
 public class PocFeature {
 
 	@Before("@deleteSamples")

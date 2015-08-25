@@ -1,18 +1,15 @@
-package org.baldercm.poc;
+package org.baldercm.poc.features;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
 
-import org.baldercm.poc.config.PocConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import cucumber.api.java.en.Then;
 
-@ContextConfiguration(classes = PocConfig.class)
-@WebAppConfiguration
+@ContextConfiguration(classes = PocCucumberConfig.class)
 public class ThenResponseIs {
 
 	@Then("^response is \"([^\"]*)\"$")

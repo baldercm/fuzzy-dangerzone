@@ -340,7 +340,7 @@
 										<exclude>**/*ITCase.java</exclude>
 									</excludes>
 									<includes>
-										<include>org/baldercm/poc/RunCucumber.java</include>
+										<include>org/baldercm/poc/features/RunCucumber.java</include>
 									</includes>
 								</configuration>
 							</execution>
