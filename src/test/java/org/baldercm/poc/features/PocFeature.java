@@ -16,6 +16,7 @@ import org.baldercm.poc.config.PocConfig;
 import org.baldercm.poc.sample.Sample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.After;
@@ -25,6 +26,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @ContextConfiguration(classes = PocConfig.class)
+@WebAppConfiguration
 public class PocFeature {
 
 	@Before("@deleteSamples")
@@ -87,7 +89,7 @@ public class PocFeature {
 		dataTable
 				.asMaps(String.class, String.class)
 				.forEach((row) -> {
-					String name = row.get("namepo");
+					String name = row.get("name");
 					short age = Short.valueOf(row.get("age"));
 					BigDecimal height = new BigDecimal(row.get("height"));
 

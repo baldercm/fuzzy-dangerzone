@@ -10,14 +10,13 @@ import javax.servlet.ServletRegistration;
 
 import org.apache.commons.lang3.CharEncoding;
 import org.baldercm.poc.config.PocConfig;
-import org.baldercm.poc.config.PocJerseyConfig;
-import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import com.thetransactioncompany.cors.CORSFilter;
 
@@ -28,8 +27,6 @@ public class PocWebApplicationInitializer implements WebApplicationInitializer {
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		springApplicationContext(servletContext);
 
-		jerseyServlet(servletContext);
-
 		corsFilter(servletContext);
 		characterEncodingFilter(servletContext);
 	}
@@ -38,22 +35,14 @@ public class PocWebApplicationInitializer implements WebApplicationInitializer {
 		AnnotationConfigWebApplicationContext appCtx = new AnnotationConfigWebApplicationContext();
 		appCtx.getEnvironment().setActiveProfiles("dev");
 		appCtx.register(PocConfig.class);
-		appCtx.refresh();
-
+		
 		servletContext.addListener(new ContextLoaderListener(appCtx));
 		servletContext.addListener(new RequestContextListener());
 
-		// workaround to prevent Jersey's SpringWebApplicationInitializer bootstrapping
-		servletContext.setInitParameter("contextConfigLocation", "dummy");
-	}
-
-	private void jerseyServlet(ServletContext servletContext) {
-		ServletContainer jerseyServlet = new ServletContainer(new PocJerseyConfig());
-
-		ServletRegistration.Dynamic jerseyServletConfig = servletContext.addServlet("jerseyServlet", jerseyServlet);
-		jerseyServletConfig.setLoadOnStartup(1);
-		jerseyServletConfig.addMapping("/*");
-		jerseyServletConfig.setAsyncSupported(true);
+		ServletRegistration.Dynamic restServletConfig = servletContext.addServlet("restServlet", new DispatcherServlet(appCtx));
+		restServletConfig.setLoadOnStartup(1);
+		restServletConfig.addMapping("/*");
+		restServletConfig.setAsyncSupported(true);
 	}
 
 	private void corsFilter(ServletContext servletContext) {

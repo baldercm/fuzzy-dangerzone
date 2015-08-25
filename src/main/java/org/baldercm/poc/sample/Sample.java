@@ -41,7 +41,7 @@ public class Sample {
 		if (repository == null)
 			throw new RuntimeException("AspectJ/@Configurable error!");
 
-		LOGGER.debug("AspectJ/@Configurable are working!");
+		LOGGER.trace("AspectJ/@Configurable are working!");
 	}
 
 	public Sample someImportantDomainOperation() {
