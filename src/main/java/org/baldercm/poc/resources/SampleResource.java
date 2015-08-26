@@ -1,76 +1,48 @@
 package org.baldercm.poc.resources;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
+import java.util.concurrent.Callable;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.baldercm.poc.sample.Sample;
 import org.baldercm.poc.sample.SampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-@Component
-@Path("/api/sample")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping(path = "/api/sample", produces = "application/json")
 public class SampleResource {
 
-	@GET
-	public Response find() {
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity find() {
 		Collection<Sample> samples = repository.findAll();
-		return Response.ok(samples).build();
+		return ResponseEntity.ok(samples);
 	}
 
-	@GET
-	@Path("/async")
-	public void findAsync(@Suspended final AsyncResponse asyncResponse) {
-		new Thread(() -> {
-			Collection<Sample> samples = repository.findAll();
-			asyncResponse.resume(Response.ok(samples).build());
-		}).start();
+	@RequestMapping(path = "/async", method = RequestMethod.GET)
+	public Callable<Collection<Sample>> findAsync() {
+		return () -> {
+			return repository.findAll();
+		};
 	}
 
-	@POST
-	public Response create(@Valid @NotNull Sample sample) {
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/json")
+	public ResponseEntity create(@Valid @NotNull @RequestBody Sample sample) {
 		sample = repository.save(sample);
-		return Response.status(Status.CREATED).entity(sample).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(sample);
 	}
 
-	@POST
-	@Path("/troll")
-	public Response createNoValidation(@NotNull Sample sample) {
-		Set<ConstraintViolation<Sample>> validationErrors = validator.validate(sample);
-		Collection<String> validationErrorMessages = new ArrayList<>();
-		validationErrors.forEach((validationError) ->
-				validationErrorMessages.add(validationError.getMessage())
-				);
-
-		if (!validationErrorMessages.isEmpty())
-			return Response.status(Status.BAD_REQUEST).entity(validationErrorMessages).build();
-
-		sample = repository.save(sample);
-		return Response.status(Status.CREATED).entity(sample).build();
-	}
-
-	@DELETE
-	public Response deleteAll() {
+	@RequestMapping(method = RequestMethod.DELETE)
+	public ResponseEntity deleteAll() {
 		repository.deleteAll();
-		return Response.noContent().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@Autowired
