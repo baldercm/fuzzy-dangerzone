@@ -11,17 +11,17 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @ComponentScan("org.baldercm.poc.features")
 public class PocCucumberConfig {
 
-	@Bean
-	public LocalValidatorFactoryBean localValidatorFactoryBean() {
-		return new LocalValidatorFactoryBean();
-	}
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
 
-	@Bean
-	public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
-		PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
-		propertyPlaceholderConfigurer.setLocation(new ClassPathResource("mongo.properties"));
+    @Bean
+    public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
+        PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
+        propertyPlaceholderConfigurer.setLocation(new ClassPathResource("mongo.properties"));
 
-		return propertyPlaceholderConfigurer;
-	}
+        return propertyPlaceholderConfigurer;
+    }
 
 }

@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="logback.xsd">
 
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
-		</encoder>
-	</appender>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+    </encoder>
+  </appender>
 
-	<appender name="REQUEST_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>request.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>otium360-trace.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%msg%n</pattern>
-		</encoder>
-	</appender>
+  <appender name="REQUEST_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>request.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>otium360-trace.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
 
-	<logger name="org.baldercm.poc" level="DEBUG" />
+  <logger name="org.baldercm.poc" level="DEBUG"/>
 
-	<logger name="org.eclipse.jetty" level="INFO" />
+  <logger name="org.eclipse.jetty" level="INFO"/>
 
-	<logger name="org.eclipse.jetty.server.RequestLog" level="WARN" additivity="false">
-		<appender-ref ref="REQUEST_LOG"/>
-	</logger>
+  <logger name="org.eclipse.jetty.server.RequestLog" level="WARN" additivity="false">
+    <appender-ref ref="REQUEST_LOG"/>
+  </logger>
 
-	<root level="WARN">
-		<appender-ref ref="CONSOLE" />
-	</root>
+  <root level="WARN">
+    <appender-ref ref="CONSOLE"/>
+  </root>
 
 </configuration>

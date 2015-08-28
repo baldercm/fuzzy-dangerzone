@@ -29,16 +29,16 @@ public class JpaConfig {
     @Value("${mysql.driver}")
     private String driverClassName;
 
-	@Value("${mysql.url}")
-	private String url;
+    @Value("${mysql.url}")
+    private String url;
 
-	@Value("${mysql.user}")
-	private String user;
+    @Value("${mysql.user}")
+    private String user;
 
-	@Value("${mysql.password}")
-	private String password;
+    @Value("${mysql.password}")
+    private String password;
 
-	@Bean
+    @Bean
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(driverClassName);

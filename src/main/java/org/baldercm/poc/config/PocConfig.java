@@ -15,19 +15,19 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @ComponentScan("org.baldercm.poc")
 public class PocConfig {
 
-	@Bean
-	public LocalValidatorFactoryBean localValidatorFactoryBean() {
-		return new LocalValidatorFactoryBean();
-	}
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
 
-	@Bean
-	public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
-		PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
+    @Bean
+    public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
+        PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
         propertyPlaceholderConfigurer.setLocations(
             new ClassPathResource("poc.properties")
         );
 
-		return propertyPlaceholderConfigurer;
-	}
+        return propertyPlaceholderConfigurer;
+    }
 
 }
