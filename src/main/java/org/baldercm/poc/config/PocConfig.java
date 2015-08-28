@@ -4,12 +4,14 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 @EnableSpringConfigured
+@PropertySource("classpath:poc.properties")
 @ComponentScan("org.baldercm.poc")
 public class PocConfig {
 
@@ -21,7 +23,9 @@ public class PocConfig {
 	@Bean
 	public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
 		PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
-		propertyPlaceholderConfigurer.setLocation(new ClassPathResource("mongo.properties"));
+        propertyPlaceholderConfigurer.setLocations(
+            new ClassPathResource("poc.properties")
+        );
 
 		return propertyPlaceholderConfigurer;
 	}
